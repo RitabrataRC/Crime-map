@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crime Dashboard</title>
+    <style>
+        /* General styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f7fc;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        /* Container for inputs */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        label {
+            font-size: 16px;
+            font-weight: 500;
+            color: #34495e;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin-top: 8px;
+            -webkit-appearance: none;
+            background: #ddd;
+            border-radius: 5px;
+            height: 6px;
+            outline: none;
+            transition: background 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background-color: #2980b9;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background-color: #3498db;
+        }
+
+        select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 100%;
+            font-size: 16px;
+            background-color: #fff;
+        }
+
+        #selectedYear {
+            font-size: 18px;
+            color: #2980b9;
+            margin-left: 10px;
+        }
+
+        /* Plot container */
+        #plot-div {
+            width: 100%;
+            max-width: 800px;
+            border: 1px solid #ddd;
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .controls, #plot-div {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Crime Dashboard</h1>
+
+<div class="controls">
+    <label for="yearSlider">Select Year:</label>
+    <input type="range" id="yearSlider" min="{{ years[0] }}" max="{{ years[-1] }}" value="{{ selected_year }}">
+    <span id="selectedYear">{{ selected_year }}</span>
+
+    <label for="crime">Select Crime:</label>
+    <select id="crime">
+        {% for crime in crimes %}
+            <option value="{{ crime }}" {% if crime == selected_crime %}selected{% endif %}>{{ crime }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div id="plot-div">{{ plot_div|safe }}</div>
+
+<script>
+    document.getElementById('yearSlider').addEventListener('input', function () {
+        const year = this.value;
+        document.getElementById('selectedYear').innerText = year;
+        updateGraph(year, document.getElementById('crime').value);
+    });
+
+    document.getElementById('crime').addEventListener('change', function () {
+        const crime = this.value;
+        updateGraph(document.getElementById('yearSlider').value, crime);
+    });
+
+    function updateGraph(year, crime) {
+        fetch('/update_graph', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ year: year, crime: crime })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('plot-div').innerHTML = data.plot_div;
+        });
+    }
+</script>
+
+</body>
+</html>

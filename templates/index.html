@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>India Crime Dashboard</title>
+    <style>
+        /* Reset styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        /* General body styling */
+        body {
+            background-color: #f4f7fc;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Header styling */
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        /* Form container styling */
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            background: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 600px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Form group styling */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-right: 20px;
+        }
+
+        label {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #34495e;
+        }
+
+        select {
+            font-size: 16px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            width: 180px;
+            color: #333;
+        }
+
+        /* Button styling */
+        input[type="submit"],
+        button[type="submit"],
+        .btn {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        input[type="submit"]:hover,
+        button[type="submit"]:hover,
+        .btn:hover {
+            background-color: #357abd;
+        }
+
+        /* See More button styling */
+        button[name="see_more"] {
+            background-color: #edf0f3;
+            color: #129fea;
+            border: 2px solid #eaf0f5;
+            border-radius: 4px;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        button[name="see_more"]:hover {
+            background-color: #d0dae0;
+            border-color: #b4cbd7;
+        }
+
+        /* Plot div styling */
+        #plot-div {
+            width: 100%;
+            max-width: 1000px;
+            border: 1px solid #ddd;
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        /* Additional controls at the bottom */
+        .last {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            form, #plot-div {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Crime in India</h1>
+
+    <form method="POST" action="/">
+        <div class="form-group">
+            <label for="year">Select Year:</label>
+            <select name="year" id="year">
+                {% for year in years %}
+                    <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="crime">Select Crime Type:</label>
+            <select name="crime" id="crime">
+                {% for crime in crimes %}
+                    <option value="{{ crime }}" {% if crime == selected_crime %}selected{% endif %}>{{ crime }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <input type="submit" value="Update">
+        <button type="submit" name="see_more" value="true" formtarget="_blank">See More</button>
+    </form>
+
+    <div id="plot-div">
+        {{ plot_div | safe }}
+    </div>
+
+    <div class="last">
+        <button class="btn" onclick="printMap()">Print Map</button>
+        <button class="btn" onclick="saveMap()">Save Map</button>
+    </div>
+
+    <script>
+        function printMap() {
+            window.print();
+        }
+
+        function saveMap() {
+            const plotDiv = document.getElementById('plot-div');
+            const svg = plotDiv.querySelector('svg');
+            const serializer = new XMLSerializer();
+            const source = serializer.serializeToString(svg);
+
+            const link = document.createElement('a');
+            link.href = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source);
+            link.download = 'map.svg';
+            link.click();
+        }
+    </script>
+</body>
+</html>

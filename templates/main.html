@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crime Graphs</title>
+    <style>
+        /* General body styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        /* Header style */
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #4a90e2;
+        }
+
+        /* Form container styling */
+        form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 20px;
+            padding: 20px;
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Individual form group styling */
+        .form-group {
+            margin-right: 20px;
+        }
+
+        /* Label styling */
+        label {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #333;
+            display: block;
+        }
+
+        /* Dropdown select styling */
+        select {
+            font-size: 16px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 150px;
+            margin-bottom: 0;
+        }
+
+        /* Submit button styling */
+        input[type="submit"], .btn {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+            margin-top: 20px;
+        }
+
+        /* Submit button hover effect */
+        input[type="submit"]:hover, .btn:hover {
+            background-color: #357abd;
+        }
+
+        /* Graphs container styling */
+        #graphs-div {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px;
+        }
+
+        /* Individual graph container styling */
+        #graph-container {
+            width: 80%;
+            margin-bottom: 40px;
+        }
+
+        /* New styles for See More button */
+        button[name="see_more"] {
+            background-color: #edf0f3; /* Distinct color */
+            color: #129fea;
+            border: 2px solid #073f69;
+            border-radius: 4px;
+            padding: 8px 16px; /* Larger padding */
+            font-size: 18px; /* Larger font size */
+            font-weight: bold; /* Make text bold */
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            margin-left: 10px;
+            margin-top: 20px;
+        }
+
+        /* See More button hover effect */
+        button[name="see_more"]:hover {
+            background-color: #c3dbe9; /* Darker color for hover */
+            border-color: #256967;
+        }
+    </style>
+</head>
+<body>
+    <h1>Crime Graphs</h1>
+
+    <!-- Form with dropdown for selecting state -->
+    <form method="POST">
+        <div class="form-group">
+            <label for="state">Select State:</label>
+            <select name="state" id="state">
+                {% for state in states %}
+                    <option value="{{ state }}" {% if state == selected_state %}selected{% endif %}>{{ state }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <input type="submit" value="Show Graphs">
+    </form>
+
+    <!-- Display selected crime and year -->
+    <div style="text-align: center; margin: 20px;">
+        <p><strong>Selected Crime:</strong> {{ selected_crime }}</p>
+        <p><strong>Selected Year:</strong> {{ selected_year }}</p>
+    </div>
+
+    <!-- Div for displaying graphs -->
+    <div id="graphs-div">
+        <div id="graph-container">
+            <h2>{{ selected_crime }} Trend Over the Years in {{ selected_state }}</h2>
+            {{ line_graph | safe }}
+        </div>
+        <div id="graph-container">
+            <h2>{{ selected_crime }} Distribution in Different Districts of {{ selected_state }} for {{ selected_year }}</h2>
+            {{ district_crime_graph | safe }}
+        </div>
+    </div>
+</body>
+</html>
