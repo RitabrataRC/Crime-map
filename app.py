@@ -3,7 +3,7 @@ import json
 import pandas as pd
 import plotly.express as px
 import math
-from flask_ngrok import run_with_ngrok
+#from flask_ngrok import run_with_ngrok
 
 app = Flask(__name__)
 
